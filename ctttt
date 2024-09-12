@@ -1,0 +1,81 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Random;
+
+public class App extends JFrame {
+    private JTextArea textArea;
+    private Random random;
+
+    public App() {
+        setTitle("Sample Application");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(500, 300);
+
+        // Create the menu bar
+        JMenuBar menuBar = new JMenuBar();
+        setJMenuBar(menuBar);
+
+        // Create the "Menu" menu
+        JMenu fileMenu = new JMenu("Menu");
+        menuBar.add(fileMenu);
+
+        // Add menu items
+        JMenuItem printDateTimeItem = new JMenuItem("Print Date and Time");
+        fileMenu.add(printDateTimeItem);
+        printDateTimeItem.addActionListener(e -> printDateTime());
+
+        JMenuItem writeToLogItem = new JMenuItem("Write to Log File");
+        fileMenu.add(writeToLogItem);
+        writeToLogItem.addActionListener(e -> writeToLog());
+
+        JMenuItem changeBgColorItem = new JMenuItem("Change Background Color");
+        fileMenu.add(changeBgColorItem);
+        changeBgColorItem.addActionListener(e -> changeBgColor());
+
+        JMenuItem exitItem = new JMenuItem("Exit");
+        fileMenu.add(exitItem);
+        exitItem.addActionListener(e -> System.exit(0));
+
+        // Create the text area
+        textArea = new JTextArea(10, 40);
+        add(new JScrollPane(textArea), BorderLayout.CENTER);
+
+        random = new Random();
+
+        setVisible(true);
+    }
+
+    private void printDateTime() {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String now = LocalDateTime.now().format(dtf);
+        textArea.setText(now);
+    }
+
+    private void writeToLog() {
+        String contents = textArea.getText().trim();
+        try (FileWriter writer = new FileWriter("log.txt")) {
+            writer.write(contents);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void changeBgColor() {
+        int hue = randomGreenHue();
+        String color = String.format("#%02XFF00", hue);
+        getContentPane().setBackground(Color.decode(color));
+    }
+
+    private int randomGreenHue() {
+        return random.nextInt(128, 256);  // Generates a random green hue between 128 and 255
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(App::new);
+    }
+}
